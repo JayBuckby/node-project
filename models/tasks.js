@@ -10,9 +10,13 @@ export const Tasks = sequelize.define(
       allowNull: false,
       primaryKey: true,
     },
-    task: {
+    title: {
       type: Sequelize.STRING,
       allowNull: false,
+    },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     priority: {
       type: Sequelize.INTEGER,
