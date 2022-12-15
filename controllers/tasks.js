@@ -4,14 +4,16 @@ import { Tasks } from "../models/tasks.js";
 export const addTask = async (req, res) => {
   try {
     const task = await Tasks.create(req.body);
-    res.status(201).send({ task: `${task.title} has been created` });
+    if (task === null) {
+      throw new Error("Unable to create task, please check your entry");
+    }
+    res.status(201).send(`The task "${task.title}" has been created`);
   } catch (error) {
     res.status(403).send(error.message);
   }
 };
 
 export const viewTasks = async (req, res) => {
-  const { title, description, priority } = req.query;
   try {
     const tasks = await Tasks.findAll();
     res.send(tasks);
@@ -64,7 +66,7 @@ export const deleteTask = async (req, res) => {
     if (!task) {
       throw new Error("Task not found");
     }
-    res.status(204).send();
+    res.status(201).send(`The task has been sucessfully deleted`);
   } catch (error) {
     res.status(404).send(error.message);
   }
