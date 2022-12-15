@@ -1,5 +1,5 @@
 import express from "express";
-import router from "./routes/students.js";
+import router from "./routes/tasks.js";
 import bodyParser from "body-parser";
 import { sequelize } from "./db/index.js";
 

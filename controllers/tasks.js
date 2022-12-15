@@ -4,7 +4,7 @@ import { Tasks } from "../models/tasks.js";
 export const addTask = async (req, res) => {
   try {
     const task = await Tasks.create(req.body);
-    res.status(201).send({ data: `Task: ${task.title} has been created` });
+    res.status(201).send({ task: `${task.title} has been created` });
   } catch (error) {
     res.status(403).send(error.message);
   }
