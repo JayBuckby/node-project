@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from "fs";
 import { Tasks } from "../models/tasks.js";
+import { Op } from "sequelize";
 
 export const addTask = async (req, res) => {
   try {
@@ -14,8 +14,33 @@ export const addTask = async (req, res) => {
 };
 
 export const viewTasks = async (req, res) => {
+  const { title, description, priority, created_by } = req.query;
+
+  const query = {
+    attributes: ["priority", "title", "description", "created_by"],
+    where: {},
+    order: [],
+  };
+  if (title) {
+    query.where.title = { [Op.like]: `%${title}%` };
+  }
+  if (description) {
+    query.where.description = { [Op.like]: `%${description}%` };
+  }
+  if (created_by) {
+    query.where.created_by = { [Op.eq]: created_by };
+  }
+  // Match priority to what it is set as in the search param.
+  if (priority == "asc") {
+    query.order[0] = ["priority", "ASC"];
+  } else if (priority == "desc") {
+    query.order[0] = ["priority", "DESC"];
+  } else if (priority) {
+    query.where.priority = { [Op.eq]: priority };
+  }
+
   try {
-    const tasks = await Tasks.findAll();
+    const tasks = await Tasks.findAll(query);
     res.send(tasks);
   } catch (error) {
     res.status(404).send(error.message);
