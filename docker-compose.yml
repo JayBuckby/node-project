@@ -1,31 +1,32 @@
-version: "3.4"
-
+version: "3"
 services:
-  db:
-    container_name: user-db
+  mysql:
+    container_name: mysql
     image: mysql:8
-    ports:
-      - 3306:3306
-    env_file:
-      - ./.env
-    environment:
-      - MYSQL_ROOT_PASSWORD=$DB_PW
-      - MYSQL_DATABASE=$DB_NAME
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
-
-  api:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    networks:
+      - todolist-mysql
     environment:
-      - DB_HOST=$DB_HOST
-      - DB_USER=$DB_USER
-      - DB_PASSWORD=$DB_PW
-      - DB_NAME=$DB_NAME
-      - DB_PORT=$DB_PORT
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=todo_list
+  api:
+    container_name: api
+    build: .
     ports:
-      - 3000:3000
-    restart: on-failure
+      - "3000:3000"
+    networks:
+      - todolist-mysql
     depends_on:
-      - db
+      mysql:
+        condition: service_healthy
+    restart: always
+    environment:
+      - DB_USER=root
+      - DB_HOST=mysql
+      - PORT=3000
+      - DB=todo_list
+      - DB_PW=password
+
+networks:
+  todolist-mysql:
