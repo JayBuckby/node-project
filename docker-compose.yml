@@ -7,9 +7,8 @@ services:
       test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
     networks:
       - todolist-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=todo_list
+    env_file: .env
+
   api:
     container_name: api
     build: .
@@ -21,12 +20,7 @@ services:
       mysql:
         condition: service_healthy
     restart: always
-    environment:
-      - DB_USER=root
-      - DB_HOST=mysql
-      - PORT=3000
-      - DB_NAME=todo_list
-      - DB_PW=password
+    env_file: .env
 
 networks:
   todolist-mysql:
